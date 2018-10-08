@@ -1,9 +1,30 @@
 from utils import data_generator
-
+import sys
+sys.path.append("../..")
 from tcn import tcn
 
+def prepare_task():
+    import os
+    import argparse
+    parser = argparse.ArgumentParser(description="TCN network on copy task.")
+    parser.add_argument('-g', '--gpu_id', default="0", help="GPU device form 0-7")
+    parser.add_argument('--save_dir', default='./result')
+    parser.add_argument('--epochs', default=10, type=int)
+    parser.add_argument('--batch_size', default=256, type=int)
+    
+    args = parser.parse_args()
+    print(args)
+    
+    if not os.path.exists(args.save_dir):
+        os.makedirs(args.save_dir)
+        print("made save dir:" + args.save_dir)
+        
+    os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_id
+    print("use gpu id:" + args.gpu_id)
+    
+    return args
 
-def run_task():
+def run_task(args):
     (x_train, y_train), (x_test, y_test) = data_generator()
 
     model = tcn.compiled_tcn(return_sequences=False,
@@ -24,9 +45,10 @@ def run_task():
 
     model.summary()
 
-    model.fit(x_train, y_train.squeeze().argmax(axis=1), epochs=100,
+    model.fit(x_train, y_train.squeeze().argmax(axis=1), epochs=args.epochs,
               validation_data=(x_test, y_test.squeeze().argmax(axis=1)))
 
 
 if __name__ == '__main__':
-    run_task()
+    args = prepare_task()
+    run_task(args)
