@@ -92,8 +92,31 @@ def process_dilations(dilations):
         new_dilations = [2 ** i for i in dilations]
         print(f'Updated dilations from {dilations} to {new_dilations} because of backwards compatibility.')
         return new_dilations
-
-
+    
+class TCNLayer(layers.Layer):
+    
+    def __init__(self, 
+                nb_filters=64,
+                kernel_size=2,
+                nb_stacks=1,
+                dilations=None,
+                activation='norm_relu',
+                use_skip_connections=True,
+                dropout_rate=0.0,
+                return_sequences=True
+                     **kwargs):
+        self.nb_filters = nb_filters
+        self.kernel_size = kernel_size
+        self.nb_stacks = nb_stacks
+        self.dilations = dilations
+        self.activation = activation
+        self.use_skip_connections = use_skip_connections
+        self.dropout_rate = dropout_rate
+        self.return_sequences = return_sequences
+        
+    def build(self, input_shape):
+        pass
+        
 def TCN(input_layer,
         nb_filters=64,
         kernel_size=2,
