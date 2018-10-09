@@ -9,7 +9,7 @@ def prepare_task():
     parser = argparse.ArgumentParser(description="TCN network on copy task.")
     parser.add_argument('-g', '--gpu_id', default="0", help="GPU device form 0-7")
     parser.add_argument('--save_dir', default='./result')
-    parser.add_argument('--epochs', default=10, type=int)
+    parser.add_argument('--epochs', default=5, type=int)
     parser.add_argument('--batch_size', default=256, type=int)
     
     args = parser.parse_args()
@@ -45,7 +45,7 @@ def run_task(args):
 
     model.summary()
 
-    model.fit(x_train, y_train.squeeze().argmax(axis=1), epochs=args.epochs,
+    model.fit(x_train, y_train.squeeze().argmax(axis=1), epochs=args.epochs, batch_size=args.batch_size,
               validation_data=(x_test, y_test.squeeze().argmax(axis=1)))
 
 

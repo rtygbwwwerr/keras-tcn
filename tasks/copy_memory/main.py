@@ -53,7 +53,7 @@ def prepare_task():
     parser = argparse.ArgumentParser(description="TCN network on copy task.")
     parser.add_argument('-g', '--gpu_id', default="0", help="GPU device form 0-7")
     parser.add_argument('--save_dir', default='./result')
-    parser.add_argument('--epochs', default=10, type=int)
+    parser.add_argument('--epochs', default=3, type=int)
     parser.add_argument('--batch_size', default=256, type=int)
     
     args = parser.parse_args()

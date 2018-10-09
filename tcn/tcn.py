@@ -1,5 +1,6 @@
+import keras
 import keras.backend as K
-import keras.layers
+from keras import layers
 from keras import optimizers
 from keras.engine.topology import Layer
 from keras.layers import Activation, Lambda
@@ -103,7 +104,7 @@ class TCNLayer(layers.Layer):
                 activation='norm_relu',
                 use_skip_connections=True,
                 dropout_rate=0.0,
-                return_sequences=True
+                return_sequences=True,
                      **kwargs):
         self.nb_filters = nb_filters
         self.kernel_size = kernel_size
