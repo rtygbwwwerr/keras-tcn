@@ -105,18 +105,61 @@ class TCNLayer(layers.Layer):
                 use_skip_connections=True,
                 dropout_rate=0.0,
                 return_sequences=True,
+                use_bias = True,
                      **kwargs):
+        super(TCNLayer, self).__init__(**kwargs)
+        
         self.nb_filters = nb_filters
         self.kernel_size = kernel_size
         self.nb_stacks = nb_stacks
         self.dilations = dilations
-        self.activation = activation
+        self.activation = keras.activations.get(activation)
         self.use_skip_connections = use_skip_connections
         self.dropout_rate = dropout_rate
         self.return_sequences = return_sequences
+        self.use_bias = use_bias
         
     def build(self, input_shape):
-        pass
+
+        input_dim = input_shape[-1]
+        kernel_shape = (self.kernel_size, input_dim, self.nb_filters)
+#         self.W = self.add_weight(name='tcn_kernel',
+#                                  shape=(self.kernel_size, input_dim, self.nb_filters),
+#                                  initializer='glorot_uniform',
+#                                  trainable=True)
+        
+        self.kernel = self.add_weight(shape=kernel_shape,
+                                      initializer='glorot_uniform',
+                                      name='kernel',
+                                      regularizer=None,
+                                      constraint=None)
+        if self.use_bias:
+            self.bias = self.add_weight(shape=(self.nb_filters,),
+                                        initializer='zeros',
+                                        name='bias',
+                                        regularizer=None,
+                                        constraint=None)
+
+        super(TCNLayer, self).build(input_shape)
+        
+    def call(self, inputs):
+        outputs = K.conv1d(
+            inputs,
+            self.kernel,
+            strides=1,
+            padding='causal',
+            data_format="channels_last",
+            dilation_rate=1)
+        
+        if self.use_bias:
+            outputs = K.bias_add(
+                outputs,
+                self.bias,
+                data_format=self.data_format)
+
+        if self.activation is not None:
+            return self.activation(outputs)
+        return outputs
         
 def TCN(input_layer,
         nb_filters=64,
